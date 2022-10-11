@@ -11,17 +11,16 @@ services:
     ports:
       - 3003:3000
     volumes:
-      - ${ROOT_PATH}/config:/usr/src/config
-      - ${ROOT_PATH}/bundles:/usr/src/bundles
-      - ${ROOT_PATH}/back:/usr/src/back
       - ${ROOT_PATH}/.env.example:/usr/src/.env.example
-      - ${ROOT_PATH}/database/backups:/usr/src/database/backups
-      - ${ROOT_PATH}/url-shortener:/usr/src/back/url-shortener
-    #entrypoint:
-    #  - "pm2-runtime"
-    #  - "start"
-    #  - "ecosystem.config.yml"
-    #  - "--env"
+      - ${ROOT_PATH}/back/bin:/usr/src/back/bin
+      - ${ROOT_PATH}/back/model:/usr/src/back/model
+      - ${ROOT_PATH}/back/public:/usr/src/back/public
+      - ${ROOT_PATH}/back/routes:/usr/src/back/routes
+      - ${ROOT_PATH}/back/services:/usr/src/back/services
+      - ${ROOT_PATH}/back/app.js:/usr/src/back/app.js
+      - ${ROOT_PATH}/back/config.js:/usr/src/back/config.js
+      - ${ROOT_PATH}/back/package.json:/usr/src/back/package.json
+      - ${ROOT_PATH}/back/package-lock.json:/usr/src/back/package-lock.json
     logging:
       driver: json-file
     networks:
