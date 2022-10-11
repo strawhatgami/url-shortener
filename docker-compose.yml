@@ -1,0 +1,75 @@
+version: '3.8'
+services:
+  back:
+    container_name: 'url-shortener-back'
+    build:
+      context: ${ROOT_PATH}
+      dockerfile: back/Dockerfile
+    env_file: .env
+    working_dir: '/usr/src/back'
+    restart: always
+    ports:
+      - 3003:3000
+    volumes:
+      - ${ROOT_PATH}/config:/usr/src/config
+      - ${ROOT_PATH}/bundles:/usr/src/bundles
+      - ${ROOT_PATH}/back:/usr/src/back
+      - ${ROOT_PATH}/.env.example:/usr/src/.env.example
+      - ${ROOT_PATH}/database/backups:/usr/src/database/backups
+      - ${ROOT_PATH}/url-shortener:/usr/src/back/url-shortener
+    #entrypoint:
+    #  - "pm2-runtime"
+    #  - "start"
+    #  - "ecosystem.config.yml"
+    #  - "--env"
+    logging:
+      driver: json-file
+    networks:
+      - url_shortener_network
+  #front:
+  #  container_name: 'url-shortener-front'
+  #  build:
+  #    context: ${ROOT_PATH}
+  #    dockerfile: front/Dockerfile
+  #  env_file: .env
+  #  working_dir: '/src'
+  #  restart: always
+  #  volumes:
+  #    - ${ROOT_PATH}/config:/usr/src/config
+  #    - ${ROOT_PATH}/bundles:/usr/src/bundles
+  #    - ${ROOT_PATH}/url-shortener:/usr/src/url-shortener
+  #    # Allow to do 'docker-compose exec front npm run bundle:fb':
+  #    - ${ROOT_PATH}/fb.webpack.config.js:/usr/src/fb.webpack.config.js
+  #    - ${ROOT_PATH}/fbEventsUserList.js:/usr/src/fbEventsUserList.js
+  #    #
+  #    - ${ROOT_PATH}/front:/usr/src/front
+  #    - ${ROOT_PATH}/front/package.json:/usr/src/package.json
+  #    - ${ROOT_PATH}/front/common.app.webpack.config.js:/usr/src/common.app.webpack.config.js
+  #    - ${ROOT_PATH}/front/dev.app.webpack.config.js:/usr/src/dev.app.webpack.config.js
+  #    - ${ROOT_PATH}/front/prod.app.webpack.config.js:/usr/src/prod.app.webpack.config.js
+  #  entrypoint:
+  #    - "npm"
+  #    - "run"
+  #    - "dev"
+  #  logging:
+  #    driver: json-file
+  #  networks:
+  #    - url_shortener_network
+  db:
+    image: mysql:5.7
+    container_name: ${DB__HOST}
+    volumes:
+      - ${ROOT_PATH}/database/data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB__ROOT_PASSWORD}
+      MYSQL_USER: ${DB__USER}
+      MYSQL_PASSWORD: ${DB__PASSWORD}
+      MYSQL_DATABASE: ${DB__NAME}
+    logging:
+      driver: json-file
+    networks:
+      - url_shortener_network
+
+networks:
+  url_shortener_network:
