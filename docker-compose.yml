@@ -25,35 +25,28 @@ services:
       driver: json-file
     networks:
       - url_shortener_network
-  #front:
-  #  container_name: 'url-shortener-front'
-  #  build:
-  #    context: ${ROOT_PATH}
-  #    dockerfile: front/Dockerfile
-  #  env_file: .env
-  #  working_dir: '/src'
-  #  restart: always
-  #  volumes:
-  #    - ${ROOT_PATH}/config:/usr/src/config
-  #    - ${ROOT_PATH}/bundles:/usr/src/bundles
-  #    - ${ROOT_PATH}/url-shortener:/usr/src/url-shortener
-  #    # Allow to do 'docker-compose exec front npm run bundle:fb':
-  #    - ${ROOT_PATH}/fb.webpack.config.js:/usr/src/fb.webpack.config.js
-  #    - ${ROOT_PATH}/fbEventsUserList.js:/usr/src/fbEventsUserList.js
-  #    #
-  #    - ${ROOT_PATH}/front:/usr/src/front
-  #    - ${ROOT_PATH}/front/package.json:/usr/src/package.json
-  #    - ${ROOT_PATH}/front/common.app.webpack.config.js:/usr/src/common.app.webpack.config.js
-  #    - ${ROOT_PATH}/front/dev.app.webpack.config.js:/usr/src/dev.app.webpack.config.js
-  #    - ${ROOT_PATH}/front/prod.app.webpack.config.js:/usr/src/prod.app.webpack.config.js
-  #  entrypoint:
-  #    - "npm"
-  #    - "run"
-  #    - "dev"
-  #  logging:
-  #    driver: json-file
-  #  networks:
-  #    - url_shortener_network
+  front:
+    container_name: 'url-shortener-front'
+    build:
+      context: ${ROOT_PATH}
+      dockerfile: front/Dockerfile
+    env_file: .env
+    working_dir: '/usr/src/front'
+    restart: always
+    ports:
+      - 3004:3000
+    volumes:
+      - ${ROOT_PATH}/.env.example:/usr/src/.env.example
+      - ${ROOT_PATH}/front/pages:/usr/src/front/pages
+      - ${ROOT_PATH}/front/public:/usr/src/front/public
+      - ${ROOT_PATH}/front/styles:/usr/src/front/styles
+      - ${ROOT_PATH}/front/next.config.js:/usr/src/front/next.config.js
+      - ${ROOT_PATH}/front/package.json:/usr/src/front/package.json
+      - ${ROOT_PATH}/front/yarn.lock:/usr/src/front/yarn.lock
+    logging:
+      driver: json-file
+    networks:
+      - url_shortener_network
   db:
     image: mysql:5.7
     container_name: ${DB__HOST}
