@@ -1,3 +1,5 @@
+const API_ROOT_EXTERNAL = "http://localhost:3003";
+
 const services = {
   getUser: ({ User }) => async (id) => {
   },
@@ -42,6 +44,37 @@ const services = {
     return {
       data: {name}
     }
+  },
+  redirectToUrl: ({ URLMap }) => async ({params}) => {
+    const {shortened} = params;
+    const urlMap = await URLMap.findOne({ where: { shortened }});
+
+    if (!urlMap) {
+      return {
+        status: 404,
+      };
+    }
+
+    return {
+      status: 301,
+      url: urlMap.full,
+    };
+  },
+  shortenUrl: ({ URLMap }) => async ({body}) => {
+    const {full, shortened} = body;
+    let urlMap = null;
+    if (!shortened) {
+      urlMap = await URLMap.fromFullUrl(full);
+    }
+// TODO validate body?.shortened : must be an URIComponent
+// TODO verify shortened is unique in db before creating an urlMap; else return error
+
+    urlMap = await URLMap.create({full, shortened});
+
+    return {
+      full: urlMap.full,
+      shortened: API_ROOT_EXTERNAL + "/url/" + urlMap.shortened,
+    };
   },
 };
 

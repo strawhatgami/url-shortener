@@ -31,6 +31,19 @@ const getAuth = async () => {
   return auth;
 }
 
+const postUrlToShorten = async (full, shortened) => {
+  const response = await customFetch({
+    method: "POST",
+    content: {
+      full,
+      shortened,
+    },
+    uri: API_ROOT_EXTERNAL + '/url',
+  });
+
+  return response;
+}
+
 async function doLogin(username, password) {
   await customFetch({
     method: "POST",
@@ -56,6 +69,93 @@ const AuthForm = ({refreshUserInfo}) => {
       <button onClick={() => login()}>Se connecter / S'enregistrer</button>
     </div>
   );
+}
+
+const ShortenerFormCreationPresenter = ({ full, shortened, onFullChange, onShortenedChange, onSubmit }) => {
+  return (
+    <div>
+      <table>
+        <tbody>
+        <tr>
+            <td>URL à raccourcir:</td>
+            <td><input type="text" name={full} value={full} onChange={onFullChange} /></td>
+          </tr>
+          <tr>
+            <td>Personnaliser l'URL raccourcie (facultatif):</td>
+            <td><input type="text" name={shortened} value={shortened} onChange={onShortenedChange} /></td>
+          </tr>
+        </tbody>
+      </table>
+      <button onClick={onSubmit}>Créer</button>
+    </div>
+  )
+}
+
+const ShortenerFormCreatedPresenter = ({ full, shortened }) => {
+  return (
+    <div>
+      <table>
+        <tbody>
+        <tr>
+            <td>URL initiale:</td>
+            <td><p>{full}</p></td>
+          </tr>
+          <tr>
+            <td>URL raccourcie:</td>
+            <td><a href={shortened}>{shortened}</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+const ShortenerForm = ({ data }) => {
+  const [full, setFull] = useState("");
+  const [shortened, setShortened] = useState("");
+  const [created, setCreated] = useState("");
+
+// TODO validate onFullChange: must be an URL
+  const onFullChange = (e) => setFull(e.target.value);
+// TODO validate onShortenedChange: must be an URIComponent
+  const onShortenedChange = (e) => setShortened(e.target.value);
+  const onSubmit = () => {
+    (async () => {
+      const response = await postUrlToShorten(full, shortened);
+// TODO handle request failure, for example if URL already exists
+      const {full: newFull, shortened: newShortened} = response;
+      setFull(newFull);
+      setShortened(newShortened);
+      setCreated(true);
+    })();
+  };
+
+  if (created) {
+    return <ShortenerFormCreatedPresenter
+      full={full}
+      shortened={shortened}
+    />
+  }
+
+  return <ShortenerFormCreationPresenter
+    full={full}
+    shortened={shortened}
+    onFullChange={onFullChange}
+    onShortenedChange={onShortenedChange}
+    onSubmit={onSubmit}
+  />
+}
+
+const ShortenerView = ({ data }) => {
+  if (!data?.name) {
+    return (
+      <div>
+        <h2>Non connecté</h2>
+      </div>
+    );
+  }
+
+  return <ShortenerForm />;
 }
 
 const AuthInfo = ({ data, error, refreshUserInfo }) => {
@@ -102,6 +202,7 @@ export default function Home({ data, error }) {
           error={state.error}
           refreshUserInfo={refreshUserInfo}
         />
+        <ShortenerView data={state.data} />
       </main>
     </div>
   )
