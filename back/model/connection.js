@@ -7,7 +7,6 @@ const { name, user, password, host } = db;
 const sequelize = new Sequelize(name, user, password, {
   dialect: 'mysql',
   host,
-  logging: true,
   define: {
     charset: 'utf8mb4',
     dialectOptions: {
@@ -16,5 +15,6 @@ const sequelize = new Sequelize(name, user, password, {
     freezeTableName: true
   }
 });
+// sequelize.sync({force: true});
 
 export default sequelize;
