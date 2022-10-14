@@ -21,6 +21,8 @@ services:
       - ${ROOT_PATH}/back/app.js:/usr/src/back/app.js
       - ${ROOT_PATH}/back/package.json:/usr/src/back/package.json
       - ${ROOT_PATH}/back/package-lock.json:/usr/src/back/package-lock.json
+    depends_on:
+      - db
     logging:
       driver: json-file
     networks:

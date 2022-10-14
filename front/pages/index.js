@@ -77,7 +77,7 @@ const ShortenerFormCreationPresenter = ({ full, shortened, onFullChange, onShort
       <table>
         <tbody>
         <tr>
-            <td>URL à raccourcir:</td>
+            <td>URL à raccourcir (doit commencer par "http://" ou "https://"):</td>
             <td><input type="text" name={full} value={full} onChange={onFullChange} /></td>
           </tr>
           <tr>

@@ -5,6 +5,7 @@ COPY front/package.json ./
 COPY front/yarn.lock ./
 RUN npm install
 COPY front/ .
-RUN npm run build
+# TODO lint the file
+#RUN npm run build
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
